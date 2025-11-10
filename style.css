@@ -47,6 +47,24 @@ h2{ font-size:18px; color:var(--accent) }
   font-size:12px; font-weight:600;
 }
 
+/* Small header row to place the Show Report button */
+.header-row{
+  display:flex; align-items:center; gap:12px; justify-content:space-between;
+}
+
+/* Buttons */
+.btn{
+  border:none; cursor:pointer; font-weight:700;
+  padding:11px 14px; border-radius:12px;
+  background:var(--accent-2); color:#fff;
+  box-shadow:0 6px 14px rgba(63,47,3,.24);
+}
+.btn.secondary{
+  background:transparent; color:var(--accent-2);
+  border:1px solid var(--accent-2); box-shadow:none;
+}
+.btn.small{ padding:8px 12px; border-radius:10px; }
+
 /* Table */
 .table-wrap{ overflow:auto; border:1px solid var(--line); border-radius:14px }
 table{ min-width:1100px; border-collapse:collapse; background:white }
@@ -78,26 +96,44 @@ input[type="text"]:focus,input[type="email"]:focus{
 .error-msg{ font-size:12px; color:#b00020; margin-top:2px; display:none }
 .invalid input{ border-color:#b00020; box-shadow:0 0 0 3px rgba(176,0,32,.10) }
 .actions{ margin-top:8px; display:flex; gap:10px; flex-wrap:wrap }
-.btn{
-  border:none; cursor:pointer; font-weight:700;
-  padding:11px 14px; border-radius:12px;
-  background:var(--accent-2); color:#fff;
-  box-shadow:0 6px 14px rgba(63,47,3,.24);
+
+/* Report section */
+.report-grid{
+  display:grid; gap:12px; grid-template-columns:1fr;
+  margin-bottom:12px;
 }
-.btn.secondary{
-  background:transparent; color:var(--accent-2);
-  border:1px solid var(--accent-2); box-shadow:none;
+.metric{
+  padding:12px; border:1px solid var(--line); border-radius:12px; background:#fffdf8;
+}
+.metric-label{ font-size:12px; color:#6f644b }
+.metric-value{ font-size:28px; font-weight:800; color:var(--accent-2) }
+.chart-wrap{
+  border:1px solid var(--line); border-radius:12px; background:#fff; padding:10px; overflow:auto;
 }
 
-/* Responsive (mobile first) */
+/* Responsive */
 @media (min-width:600px){
   h1{font-size:26px} h2{font-size:20px}
   .container{padding:24px 18px;gap:22px}
   table{min-width:100%}
   form .grid{grid-template-columns:repeat(2,minmax(220px,1fr))}
+  .report-grid{ grid-template-columns: repeat(3, 1fr); }
 }
 @media (min-width:900px){
   h1{font-size:32px} h2{font-size:22px}
   .container{padding:28px 20px;gap:26px}
   form .grid{grid-template-columns:repeat(2,minmax(240px,1fr))}
 }
+/* legend for the report */
+.legend{
+  display:flex; gap:16px; align-items:center; flex-wrap:wrap;
+  margin:6px 0 10px;
+  color:#6f644b; font-size:13px; font-weight:600;
+}
+.legend .dot{
+  display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px;
+  background:#ccc;
+}
+.legend .dot.total{ background:#3F2F03; }        /* total */
+.legend .dot.present{ background:#807043; }      /* present */
+.legend .dot.participated{ background:#B9B29F; } /* participated */
