@@ -8,9 +8,9 @@
 </head>
 <body>
 
-
+  <!-- Navigation -->
   <nav class="nav">
-  
+    <a href="#home" class="left">Home</a>
     <a href="#attendance">Attendance List</a>
     <a href="#add-student">Add Student</a>
   </nav>
@@ -19,8 +19,11 @@
 
     <!-- Attendance Table -->
     <section id="attendance" class="card">
-      <h1>Attendance List</h1>
-      <span class="tag">Session date: 2025-10-27</span>
+      <div class="header-row">
+        <h1>Attendance List</h1>
+        <button id="showReportBtn" class="btn small">Show Report</button>
+      </div>
+      <span class="tag">Session date: 2025-11-06</span>
 
       <div class="table-wrap">
         <table aria-label="Attendance Table" id="attendanceTable">
@@ -42,7 +45,7 @@
             </tr>
           </thead>
           <tbody>
-         
+            <!-- Row 1 -->
             <tr>
               <td>1001</td><td>Ahmed</td><td>Sara</td><td>AWP</td>
               <td><input type="checkbox" checked></td>
@@ -61,8 +64,7 @@
               <td class="participations">0</td>
               <td class="message"></td>
             </tr>
-
-          
+            <!-- Row 2 -->
             <tr>
               <td>1002</td><td>Yacine</td><td>Ali</td><td>AWP</td>
               <td><input type="checkbox" checked></td>
@@ -81,8 +83,7 @@
               <td class="participations">0</td>
               <td class="message"></td>
             </tr>
-
-           
+            <!-- Row 3 -->
             <tr>
               <td>1003</td><td>Houcine</td><td>Rania</td><td>AWP</td>
               <td><input type="checkbox" checked></td>
@@ -106,6 +107,24 @@
       </div>
     </section>
 
+    <!-- Report Section -->
+      <!-- Report Section -->
+    <section id="report" class="card" aria-live="polite" style="display:none;">
+      <h2>Attendance Report – per Session</h2>
+
+      <!-- petite légende -->
+      <div class="legend">
+        <span><i class="dot total"></i>Total</span>
+        <span><i class="dot present"></i>Present</span>
+        <span><i class="dot participated"></i>Participated</span>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="reportChart" width="800" height="360" aria-label="Report chart per session"></canvas>
+      </div>
+    </section>
+
+    <!-- Add Student Form -->
     <section id="add-student" class="card">
       <h2>Add New Student</h2>
       <form id="studentForm" action="#" method="post" novalidate>
@@ -138,7 +157,7 @@
       </form>
     </section>
   </main>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
