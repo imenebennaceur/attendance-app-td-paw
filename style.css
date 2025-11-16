@@ -13,7 +13,7 @@ body{
   background:linear-gradient(180deg,var(--bg),#f6e9c2);
 }
 
-/* Navigation */
+
 .nav{
   position:sticky; top:0; z-index:10;
   display:flex; gap:.5rem; align-items:center;
@@ -47,12 +47,11 @@ h2{ font-size:18px; color:var(--accent) }
   font-size:12px; font-weight:600;
 }
 
-/* Small header row to place the Show Report button */
+
 .header-row{
   display:flex; align-items:center; gap:12px; justify-content:space-between;
 }
 
-/* Buttons */
 .btn{
   border:none; cursor:pointer; font-weight:700;
   padding:11px 14px; border-radius:12px;
@@ -65,7 +64,7 @@ h2{ font-size:18px; color:var(--accent) }
 }
 .btn.small{ padding:8px 12px; border-radius:10px; }
 
-/* Table */
+
 .table-wrap{ overflow:auto; border:1px solid var(--line); border-radius:14px }
 table{ min-width:1100px; border-collapse:collapse; background:white }
 th,td{ padding:10px 12px; text-align:left; font-size:14px }
@@ -77,12 +76,12 @@ tbody tr{ border-top:1px solid var(--line) }
 tbody tr:nth-child(even){ background:#fffaf0 }
 input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--accent) }
 
-/* Highlights */
+
 .abs-low   { background:var(--ok)!important; }
 .abs-mid   { background:var(--mid)!important; }
 .abs-high  { background:var(--bad)!important; }
 
-/* Form */
+
 form .grid{ display:grid; gap:12px; grid-template-columns:1fr }
 .field{ display:flex; flex-direction:column; gap:6px }
 label{ font-weight:600; color:var(--accent-2) }
@@ -97,7 +96,6 @@ input[type="text"]:focus,input[type="email"]:focus{
 .invalid input{ border-color:#b00020; box-shadow:0 0 0 3px rgba(176,0,32,.10) }
 .actions{ margin-top:8px; display:flex; gap:10px; flex-wrap:wrap }
 
-/* Report section */
 .report-grid{
   display:grid; gap:12px; grid-template-columns:1fr;
   margin-bottom:12px;
@@ -111,7 +109,7 @@ input[type="text"]:focus,input[type="email"]:focus{
   border:1px solid var(--line); border-radius:12px; background:#fff; padding:10px; overflow:auto;
 }
 
-/* Responsive */
+
 @media (min-width:600px){
   h1{font-size:26px} h2{font-size:20px}
   .container{padding:24px 18px;gap:22px}
@@ -124,7 +122,7 @@ input[type="text"]:focus,input[type="email"]:focus{
   .container{padding:28px 20px;gap:26px}
   form .grid{grid-template-columns:repeat(2,minmax(240px,1fr))}
 }
-/* legend for the report */
+
 .legend{
   display:flex; gap:16px; align-items:center; flex-wrap:wrap;
   margin:6px 0 10px;
@@ -134,6 +132,17 @@ input[type="text"]:focus,input[type="email"]:focus{
   display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px;
   background:#ccc;
 }
-.legend .dot.total{ background:#3F2F03; }        /* total */
-.legend .dot.present{ background:#807043; }      /* present */
-.legend .dot.participated{ background:#B9B29F; } /* participated */
+.legend .dot.total{ background:#3F2F03; }      
+.legend .dot.present{ background:#807043; }     
+.legend .dot.participated{ background:#B9B29F; }
+
+.row-excellent {
+  background: #C6F6D5 !important; 
+  transition: background-color .3s ease, opacity .3s ease;
+}
+
+
+.header-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.header-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+
