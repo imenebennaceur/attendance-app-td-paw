@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- Navigation -->
+
   <nav class="nav">
     <a href="#home" class="left">Home</a>
     <a href="#attendance">Attendance List</a>
@@ -17,7 +17,7 @@
 
   <main class="container">
 
-    <!-- Attendance Table -->
+  
     <section id="attendance" class="card">
       <div class="header-row">
         <h1>Attendance List</h1>
@@ -107,8 +107,7 @@
       </div>
     </section>
 
-    <!-- Report Section -->
-      <!-- Report Section -->
+    
     <section id="report" class="card" aria-live="polite" style="display:none;">
       <h2>Attendance Report – per Session</h2>
 
@@ -159,5 +158,14 @@
   </main>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="script.js"></script>
+  <div class="header-row">
+  <h1>Attendance List</h1>
+  <div class="header-actions">
+    <button id="showReportBtn" class="btn small">Show Report</button>
+    <button id="highlightExcellentBtn" class="btn small">Highlight Excellent Students</button>
+    <button id="resetColorsBtn" class="btn small secondary">Reset Colors</button>
+  </div>
+</div>
+
 </body>
 </html>
