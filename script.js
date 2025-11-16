@@ -7,9 +7,9 @@
 */
 
 function evaluateRow(tr){
-  // sessions S1..S6 => 5..10
+ 
   const sessionChecks = Array.from(tr.querySelectorAll('td:nth-child(n+5):nth-child(-n+10) input[type="checkbox"]'));
-  // participation P1..P6 => 11..16
+ 
   const partChecks    = Array.from(tr.querySelectorAll('td:nth-child(n+11):nth-child(-n+16) input[type="checkbox"]'));
 
   const presents  = sessionChecks.filter(c => c.checked).length;
@@ -23,13 +23,13 @@ function evaluateRow(tr){
   if(absCell)  absCell.textContent  = absences;
   if(partCell) partCell.textContent = parts;
 
-  // highlight row by number of absences
+ 
   tr.classList.remove('abs-low','abs-mid','abs-high');
   if(absences < 3)       tr.classList.add('abs-low');
   else if(absences <= 4) tr.classList.add('abs-mid');
   else                   tr.classList.add('abs-high');
 
-  // simple messaging (tweak thresholds if needed)
+ 
   let msg = "";
   if(absences >= 5){
     msg = "Excluded – too many absences – You need to participate more";
@@ -47,7 +47,7 @@ function evaluateAll(){
   document.querySelectorAll('#attendanceTable tbody tr').forEach(evaluateRow);
 }
 
-// live recompute when a checkbox in table changes
+
 document.addEventListener('change', e => {
   if(e.target.matches('#attendanceTable input[type="checkbox"]')){
     const tr = e.target.closest('tr');
@@ -92,7 +92,7 @@ function drawSessionChart({ total, present, participated }){
   if(!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  // clear canvas
+
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   const labels = ['S1','S2','S3','S4','S5','S6'];
@@ -104,13 +104,13 @@ function drawSessionChart({ total, present, participated }){
     { name:'Participated', values: participated, color:'#B9B29F' }
   ];
 
-  // layout
+  
   const padding = 44;
   const chartW  = canvas.width  - padding*2;
   const chartH  = canvas.height - padding*2;
 
-  const barGap   = 10;  // space between bars within a group
-  const groupGap = 26;  // space between groups
+  const barGap   = 10;  
+  const groupGap = 26;  
 
   const barsPerGroup = datasets.length;
   const maxVal = Math.max(...datasets.flatMap(d => d.values), 1);
@@ -120,19 +120,19 @@ function drawSessionChart({ total, present, participated }){
   const innerWidth = groupWidth - barGap * (barsPerGroup - 1);
   const singleBarW = innerWidth / barsPerGroup;
 
-  // axes
+  
   ctx.strokeStyle = '#b9ac8b';
   ctx.lineWidth = 1.25;
   ctx.beginPath();
-  // X axis
+ 
   ctx.moveTo(padding, canvas.height - padding);
   ctx.lineTo(canvas.width - padding, canvas.height - padding);
-  // Y axis
+  
   ctx.moveTo(padding, padding);
   ctx.lineTo(padding, canvas.height - padding);
   ctx.stroke();
 
-  // horizontal guides
+ 
   ctx.strokeStyle = 'rgba(0,0,0,0.06)';
   ctx.lineWidth = 1;
   const guides = 5;
@@ -141,16 +141,15 @@ function drawSessionChart({ total, present, participated }){
     ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(canvas.width - padding, y); ctx.stroke();
   }
 
-  // draw groups
+ 
   ctx.textAlign = 'center';
   for(let g=0; g<groups; g++){
     const groupX = padding + g*(groupWidth + groupGap);
-    // session label
+   
     ctx.fillStyle = '#6f644b';
     ctx.font = '12px Inter, sans-serif';
     ctx.fillText(labels[g], groupX + groupWidth/2, canvas.height - padding + 16);
 
-    // bars in group
     let barX = groupX;
     datasets.forEach(ds => {
       const value = ds.values[g];
@@ -160,7 +159,7 @@ function drawSessionChart({ total, present, participated }){
       ctx.fillStyle = ds.color;
       ctx.fillRect(barX, y, singleBarW, h);
 
-      // value label above bar
+     
       ctx.fillStyle = '#1A1917';
       ctx.font = 'bold 12px Inter, sans-serif';
       ctx.fillText(String(value), barX + singleBarW/2, y - 6);
@@ -169,14 +168,14 @@ function drawSessionChart({ total, present, participated }){
     });
   }
 
-  // max tick label
+ 
   ctx.fillStyle = '#6f644b';
   ctx.font = '12px Inter, sans-serif';
   ctx.textAlign = 'right';
   ctx.fillText(String(maxVal), padding - 6, padding + 6);
 }
 
-// Show Report button: compute and draw per-session chart, then reveal section
+
 const showReportBtn = document.getElementById('showReportBtn');
 if(showReportBtn){
   showReportBtn.addEventListener('click', () => {
@@ -213,7 +212,6 @@ if(form){
     return ok;
   }
 
-  // live validation
   Object.values(fields).forEach(f => {
     if(!f.el) return;
     f.el.addEventListener('input', () => validateField(f));
@@ -224,7 +222,7 @@ if(form){
     const results = Object.values(fields).map(validateField);
     if(results.some(ok => !ok)){ e.preventDefault(); return; }
 
-    // demo: add the student as a new row instead of real submit
+  
     e.preventDefault();
     const tbody = document.querySelector('#attendanceTable tbody');
     if(!tbody) return;
@@ -243,14 +241,14 @@ if(form){
     `;
     tbody.appendChild(tr);
 
-    // evaluate this new row
+    
     evaluateRow(tr);
 
-    // reset form & hide errors
+   
     form.reset();
     Object.values(fields).forEach(f => showError(f.wrap, true));
 
-    // if the report is visible, refresh it
+  
     const reportVisible = document.getElementById('report')?.style.display !== 'none';
     if(reportVisible){
       const data = computeSessionReport();
@@ -262,18 +260,16 @@ if(form){
   /* ========================== jQuery interactions ========================== */
 $(document).ready(function(){
 
-  // 1. survol -> surligner la ligne
   $('#attendanceTable tbody tr').hover(
     function(){
-      $(this).css('background-color', '#fff1c6'); // couleur beige clair
+      $(this).css('background-color', '#fff1c6'); 
     },
     function(){
-      // retire la couleur au départ de la souris
+     
       $(this).css('background-color', '');
     }
   );
 
-  // 2. clic -> affiche une boîte avec nom complet et absences
   $('#attendanceTable tbody').on('click', 'tr', function(){
     const lastName  = $(this).find('td:nth-child(2)').text().trim();
     const firstName = $(this).find('td:nth-child(3)').text().trim();
@@ -290,24 +286,78 @@ $(document).ready(function(){
   // quand la souris passe sur une ligne
   $('#attendanceTable tbody').on('mouseenter', 'tr', function(){
     $(this).css({
-      'background-color': '#1577a8ff',   // jaune clair visible
+      'background-color': '#1577a8ff',   
       'transition': 'background-color 0.2s'
     });
   });
 
   // quand la souris quitte la ligne
   $('#attendanceTable tbody').on('mouseleave', 'tr', function(){
-    $(this).css('background-color', ''); // revient à la couleur d’origine
+    $(this).css('background-color', ''); 
   });
 
 
 
-    // si aucune valeur encore calculée
     const absDisplay = abs || 'not evaluated';
     const fullName = `${firstName} ${lastName}`;
 
     alert(`Student: ${fullName}\nAbsences: ${absDisplay}`);
   });
+/* ========================== jQuery: highlight excellent students ========================== */
+/*
+Definition:
+- "Excellent" = fewer than 3 absences (absences cell < 3).
+- We rely on your existing evaluateRow/evaluateAll that fills .absences.
+
+Behavior:
+- On click "Highlight Excellent Students": find rows with absences < 3, add .row-excellent
+  + quick animation (fade out/in) to draw attention.
+- On click "Reset Colors": remove .row-excellent and restore original look.
+*/
+
+$(document).ready(function(){
+
+  function ensureComputed() {
+    if (typeof evaluateAll === 'function') evaluateAll();
+  }
+
+  $('#highlightExcellentBtn').on('click', function(){
+    ensureComputed();
+
+   
+    $('#attendanceTable tbody tr').each(function(){
+      const absText = $(this).find('.absences').text().trim();
+      const absences = parseInt(absText || '0', 10);
+
+      if (!isNaN(absences) && absences < 3) {
+     
+        const $row = $(this);
+        $row.addClass('row-excellent')
+            .fadeTo(150, 0.4)
+            .fadeTo(150, 1.0);
+      }
+    });
+  });
+
+  $('#resetColorsBtn').on('click', function(){
+    
+    $('#attendanceTable tbody tr').removeClass('row-excellent').css('opacity', '');
+  });
+
+ 
+  $('#attendanceTable').on('change', 'input[type="checkbox"]', function(){
+    const $tr = $(this).closest('tr');
+   
+    if (typeof evaluateRow === 'function') evaluateRow($tr[0]);
+
+    const abs = parseInt($tr.find('.absences').text().trim() || '0', 10);
+    if (!isNaN(abs)) {
+      if (abs < 3) $tr.addClass('row-excellent');
+      else $tr.removeClass('row-excellent');
+    }
+  });
+
+});
 
 
 
