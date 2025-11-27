@@ -1,171 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>TP1/TP2 – Attendance (Mobile-First)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Attendance Dashboard – AWP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
+<div class="layout">
 
-  <nav class="nav">
-    <a href="#home" class="left">Home</a>
-    <a href="#attendance">Attendance List</a>
-    <a href="#add-student">Add Student</a>
-  </nav>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="logo">AWP</h2>
+    <nav>
+      <a href="#attendance" class="nav-link active">📋 Attendance</a>
+      <a href="#add-student" class="nav-link">➕ Add Student</a>
+      <a href="#report" class="nav-link">📊 Report</a>
+      <a href="db_management.php" class="nav-link">🛠 DB Management</a>
+      <a href="#" class="nav-link">🔓 Logout</a>
+    </nav>
+  </aside>
 
-  <main class="container">
+  <!-- MAIN CONTENT -->
+  <main class="content">
 
-  
-    <section id="attendance" class="card">
-      <div class="header-row">
-        <h1>Attendance List</h1>
-        <button id="showReportBtn" class="btn small">Show Report</button>
-      </div>
-      <span class="tag">Session date: 2025-11-06</span>
+    <!-- HEADER -->
+    <header class="header">
+      <h1>Attendance Dashboard</h1>
+      <span class="date-tag">Session date: 
+        <strong><?= date('Y-m-d') ?></strong>
+      </span>
+    </header>
 
-      <div class="table-wrap">
-        <table aria-label="Attendance Table" id="attendanceTable">
-          <thead>
-            <tr>
-              <th rowspan="2">Student ID</th>
-              <th rowspan="2">Last Name</th>
-              <th rowspan="2">First Name</th>
-              <th rowspan="2">Course</th>
-              <th colspan="6">Sessions (S1–S6)</th>
-              <th colspan="6">Participation (P1–P6)</th>
-              <th rowspan="2">Absences</th>
-              <th rowspan="2">Participation</th>
-              <th rowspan="2">Message</th>
-            </tr>
-            <tr>
-              <th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th><th>S6</th>
-              <th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th><th>P6</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Row 1 -->
-            <tr>
-              <td>1001</td><td>Ahmed</td><td>Sara</td><td>AWP</td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td class="absences">0</td>
-              <td class="participations">0</td>
-              <td class="message"></td>
-            </tr>
-            <!-- Row 2 -->
-            <tr>
-              <td>1002</td><td>Yacine</td><td>Ali</td><td>AWP</td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox" checked></td>
-              <td class="absences">0</td>
-              <td class="participations">0</td>
-              <td class="message"></td>
-            </tr>
-            <!-- Row 3 -->
-            <tr>
-              <td>1003</td><td>Houcine</td><td>Rania</td><td>AWP</td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox" checked></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td><input type="checkbox"></td>
-              <td class="absences">0</td>
-              <td class="participations">0</td>
-              <td class="message"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
 
-    
-    <section id="report" class="card" aria-live="polite" style="display:none;">
-      <h2>Attendance Report – per Session</h2>
-
-      <!-- petite légende -->
-      <div class="legend">
-        <span><i class="dot total"></i>Total</span>
-        <span><i class="dot present"></i>Present</span>
-        <span><i class="dot participated"></i>Participated</span>
-      </div>
-
-      <div class="chart-wrap">
-        <canvas id="reportChart" width="800" height="360" aria-label="Report chart per session"></canvas>
-      </div>
-    </section>
-
-    <!-- Add Student Form -->
-    <section id="add-student" class="card">
-      <h2>Add New Student</h2>
-      <form id="studentForm" action="#" method="post" novalidate>
-        <div class="grid">
-          <div class="field" id="f-studentId">
-            <label for="studentId">Student ID</label>
-            <input type="text" id="studentId" name="studentId" placeholder="">
-            <span class="error-msg">Student ID must be numeric and not empty.</span>
-          </div>
-          <div class="field" id="f-lastName">
-            <label for="lastName">Last Name</label>
-            <input type="text" id="lastName" name="lastName" placeholder="">
-            <span class="error-msg">Only letters allowed.</span>
-          </div>
-          <div class="field" id="f-firstName">
-            <label for="firstName">First Name</label>
-            <input type="text" id="firstName" name="firstName" placeholder="">
-            <span class="error-msg">Only letters allowed.</span>
-          </div>
-          <div class="field" id="f-email">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="">
-            <span class="error-msg">Enter a valid email.</span>
-          </div>
-        </div>
+    <!-- ATTENDANCE LIST -->
+  <!-- ========== ATTENDANCE LIST ========== -->
+<section id="attendance" class="card">
+    <div class="card-header">
+        <h2>Attendance List</h2>
         <div class="actions">
-          <button type="submit" class="btn">Submit</button>
-          <button type="reset" class="btn secondary">Reset</button>
-        </div>
-      </form>
-    </section>
-  </main>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="script.js"></script>
-  <div class="header-row">
-  <h1>Attendance List</h1>
-  <div class="header-actions">
+            <button id="highlightExcellentBtn" class="btn small">Highlight Excellent</button>
+            <button id="resetBtn" class="btn small secondary">Reset</button>
+            <!-- ==== REPORT CONTROLS ==== -->
+
     <button id="showReportBtn" class="btn small">Show Report</button>
-    <button id="highlightExcellentBtn" class="btn small">Highlight Excellent Students</button>
-    <button id="resetColorsBtn" class="btn small secondary">Reset Colors</button>
-  </div>
+
+
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search by name...">
+        <button id="sortAbs" class="btn small">Sort Absences ↑</button>
+        <button id="sortPar" class="btn small">Sort Participation ↓</button>
+    </div>
+
+    <div class="table-wrap">
+        <table id="attendanceTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Last</th>
+                    <th>First</th>
+                    <th>Course</th>
+
+                    <!-- S1–S6 -->
+                    <th colspan="2">S1</th>
+                    <th colspan="2">S2</th>
+                    <th colspan="2">S3</th>
+                    <th colspan="2">S4</th>
+                    <th colspan="2">S5</th>
+                    <th colspan="2">S6</th>
+
+                    <th>Abs</th>
+                    <th>Par</th>
+                    <th>Message</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+
+            <tbody id="studentsBody"></tbody>
+        </table>
+    </div>
+</section>
+
+
+
+
+   
+
+<!-- ========== TOTAL SUMMARY TABLE ========== -->
+<section id="summary" class="card">
+    <h2>Summary (Totals)</h2>
+
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Total Students</th>
+                <th>Total Presents</th>
+                <th>Total Absences</th>
+                <th>Total Participations</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td id="sum_students">0</td>
+                <td id="sum_present">0</td>
+                <td id="sum_absent">0</td>
+                <td id="sum_part">0</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<!-- ========== REPORT CHART ========== -->
+<section id="report" class="card">
+    <h2>Attendance Report</h2>
+    <canvas id="reportChart" style="max-height:250px;"></canvas>
+</section>
+
+    <!-- ADD STUDENT -->
+  <!-- ========== ADD STUDENT ========== -->
+<section id="add-student" class="card">
+    <h2>Add New Student</h2>
+
+    <form id="addForm">
+        <div class="grid">
+            <div class="field">
+                <label>ID</label>
+                <input id="sid" name="student_id" required>
+                <span id="err_id" class="err"></span>
+            </div>
+
+            <div class="field">
+                <label>Last Name</label>
+                <input id="lname" name="last_name" required>
+                <span id="err_lname" class="err"></span>
+            </div>
+
+            <div class="field">
+                <label>First Name</label>
+                <input id="fname" name="first_name" required>
+                <span id="err_fname" class="err"></span>
+            </div>
+
+            <div class="field">
+                <label>Email</label>
+                <input id="email" name="email" required>
+                <span id="err_email" class="err"></span>
+            </div>
+        </div>
+
+        <button class="btn">Add Student</button>
+    </form>
+
+    <div id="addMsg"></div>
+</section>
+
+
+  </main>
 </div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
