@@ -1,28 +1,40 @@
 <?php
 require_once "db_connect.php";
+
 $conn = getConnection();
+header("Content-Type: application/json");
 
 if (!$conn) {
-    die("DB connection error");
+    echo json_encode(["status" => "error", "msg" => "DB connection failed"]);
+    exit;
 }
 
-$id    = $_POST["student_id"];
-$ln    = $_POST["last_name"];
-$fn    = $_POST["first_name"];
-$email = $_POST["email"];
+$id     = $_POST["student_id"] ?? null;
+$ln     = $_POST["last_name"] ?? null;
+$fn     = $_POST["first_name"] ?? null;
+$email  = $_POST["email"] ?? null;
 
-$sql = "INSERT INTO students (id, last_name, first_name, email)
-        VALUES (:id, :ln, :fn, :email)";
+if (!$id || !$ln || !$fn || !$email) {
+    echo json_encode(["status" => "error", "msg" => "Missing fields"]);
+    exit;
+}
 
-$stmt = $conn->prepare($sql);
+try {
+    $sql = "INSERT INTO students (id, last_name, first_name, email)
+            VALUES (:id, :ln, :fn, :email)";
 
-$stmt->execute([
-    ":id"    => $id,
-    ":ln"    => $ln,
-    ":fn"    => $fn,
-    ":email" => $email
-]);
+    $stmt = $conn->prepare($sql);
 
-header("Location: db_management.php?added=1");
-exit;
+    $stmt->execute([
+        ":id"    => $id,
+        ":ln"    => $ln,
+        ":fn"    => $fn,
+        ":email" => $email
+    ]);
+
+    echo json_encode(["status" => "success", "msg" => "Student added"]);
+
+} catch (Exception $e) {
+    echo json_encode(["status" => "error", "msg" => $e->getMessage()]);
+}
 ?>

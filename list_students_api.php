@@ -1,9 +1,16 @@
 <?php
 require_once "db_connect.php";
+
 $conn = getConnection();
 
-$students = $conn->query("SELECT * FROM students")->fetchAll(PDO::FETCH_ASSOC);
+header("Content-Type: application/json");
 
-echo json_encode($students);
+try {
+    $stmt = $conn->query("SELECT * FROM students ORDER BY id ASC");
+    $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($students);
+
+} catch (Exception $e) {
+    echo json_encode(["error" => $e->getMessage()]);
+}
 ?>
-

@@ -1,7 +1,6 @@
 /* ============================================================
    LOAD STUDENTS FROM DATABASE
 ============================================================ */
-// Load students from MySQL and show them in main table
 function loadStudents() {
 
     $.ajax({
@@ -12,7 +11,7 @@ function loadStudents() {
         success: function (students) {
 
             let tbody = $("#studentsBody");
-            tbody.html(""); // Clear table
+            tbody.html("");
 
             students.forEach(stu => {
 
@@ -24,6 +23,7 @@ function loadStudents() {
                     <td>AWP</td>
                 `;
 
+                // 6 sessions
                 for (let i = 0; i < 6; i++) {
                     row += `
                         <td><input type="checkbox" class="present"></td>
@@ -43,11 +43,12 @@ function loadStudents() {
             });
         }
     });
-loadAttendanceValues();
-
 
 }
 
+/* ============================================================
+   UPDATE SUMMARY
+============================================================ */
 function updateSummary() {
     let totalStudents = $("#studentsBody tr").length;
     let totalPresent = 0;
@@ -61,8 +62,6 @@ function updateSummary() {
 
         totalAbsent += abs;
         totalParts  += par;
-
-        // THERE ARE 6 SESSIONS
         totalPresent += (6 - abs);
     });
 
@@ -72,17 +71,8 @@ function updateSummary() {
     $("#sum_part").text(totalParts);
 }
 
-$("#sortAbs").click(function () {
-    // your sorting...
-    updateSummary();
-});
-
-$("#resetBtn").click(function(){
-    updateSummary();
-});
-
 /* ============================================================
-   CALCULATE ROW
+   CALCULATE ONE ROW
 ============================================================ */
 function calculateRow(tr) {
     const presentBoxes = tr.querySelectorAll("input.present");
@@ -107,7 +97,7 @@ function calculateRow(tr) {
         msg.textContent = "Good attendance – Excellent participation";
     } else if (abs <= 4) {
         tr.classList.add("warning");
-        msg.textContent = "Warning – attendance low – You need to participate more";
+        msg.textContent = "Warning – attendance low – You need more participation";
     } else {
         tr.classList.add("bad");
         msg.textContent = "Excluded – too many absences";
@@ -132,7 +122,7 @@ function showReport() {
     const rows = document.querySelectorAll("#attendanceTable tbody tr");
 
     const sessionPresent = [0,0,0,0,0,0];
-    const sessionPart = [0,0,0,0,0,0];
+    const sessionPart    = [0,0,0,0,0,0];
 
     rows.forEach(tr => {
         const presentBoxes = tr.querySelectorAll("input.present");
@@ -155,8 +145,8 @@ function showReport() {
         data: {
             labels: ["S1","S2","S3","S4","S5","S6"],
             datasets: [
-                { label: "Present", data: sessionPresent, backgroundColor: "#7a5c2f" },
-                { label: "Participated", data: sessionPart, backgroundColor: "#c2a878" }
+                { label: "Present",      data: sessionPresent, backgroundColor: "#7a5c2f" },
+                { label: "Participation", data: sessionPart,    backgroundColor: "#c2a878" }
             ]
         },
         options: { indexAxis: "y", responsive: true }
@@ -165,53 +155,47 @@ function showReport() {
     $("#report").show();
 }
 
+
 /* ============================================================
    PAGE READY
 ============================================================ */
 $(document).ready(function () {
 
-    /* Load database students */
-    loadStudents();
-$("#addForm").submit(function(e) {
-    e.preventDefault();
+    loadStudents(); // 🔥 FIRST LOAD
 
-    $.ajax({
-        url: "add_student.php",
-        method: "POST",
-        data: $("#addForm").serialize(),
+    /* ADD STUDENT */
+    $("#addForm").submit(function(e) {
+        e.preventDefault();
 
-        success: function() {
-            $("#addMsg").text("Student added!");
-            $("#sid, #lname, #fname, #email").val("");
+        $.ajax({
+            url: "add_student.php",
+            method: "POST",
+            data: $("#addForm").serialize(),
 
-            loadStudents(); // Reload table immediately
-        }
-    });
-});
-
-
-
-
-    /* Attendance change = update row */
-    $(document).on("change", "input.present, input.part", function () {
-        calculateRow(this.closest("tr"));
-    });
-
-    /* Buttons */
-    $("#showReportBtn").click(showReport);
-
-    $("#resetBtn").click(function () {
-        $("#attendanceTable tbody tr").removeClass("good warning bad");
-    });
-
-    $("#excellentBtn").click(function () {
-        calculateAll();
-        $("#attendanceTable tbody tr").each(function () {
-            if (parseInt($(this).find(".abs").text()) < 3)
-                $(this).fadeOut(100).fadeIn(100);
+            success: function() {
+                $("#addMsg").text("Student added!");
+                $("#sid,#lname,#fname,#email").val("");
+                loadStudents();
+            }
         });
     });
 
+    /* UPDATE ROW ON CHANGE */
+    $(document).on("change", "input.present, input.part", function () {
+        calculateRow(this.closest("tr"));
+        updateSummary();
+    });
+
+    /* SHOW REPORT */
+    $("#showReportBtn").click(showReport);
+
+    /* RESET COLORS */
+    $("#resetBtn").click(function () {
+        $("#attendanceTable tbody tr").removeClass("good warning bad");
+        updateSummary();
+    });
+
+    /* SEARCH */
     $("#searchInput").on("keyup", function () {
         const value = $(this).val().toLowerCase();
         $("#attendanceTable tbody tr").filter(function () {
@@ -219,100 +203,20 @@ $("#addForm").submit(function(e) {
         });
     });
 
+    /* SORT BY ABSENCES */
     $("#sortAbs").click(function () {
         calculateAll();
-        const rows = $("#attendanceTable tbody tr").get();
-        rows.sort((a, b) =>
-            parseInt($(a).find(".abs").text()) -
-            parseInt($(b).find(".abs").text())
-        );
-        $("#attendanceTable tbody").append(rows);
+        const rows = $("#studentsBody tr").get();
+        rows.sort((a,b)=> parseInt($(a).find(".abs").text()) - parseInt($(b).find(".abs").text()));
+        $("#studentsBody").append(rows);
     });
 
+    /* SORT BY PARTICIPATIONS */
     $("#sortPar").click(function () {
         calculateAll();
-        const rows = $("#attendanceTable tbody tr").get();
-        rows.sort((a, b) =>
-            parseInt($(b).find(".par").text()) -
-            parseInt($(a).find(".par").text())
-        );
-        $("#attendanceTable tbody").append(rows);
-    });
-
-function saveAttendance(sessionId) {
-    let records = [];
-
-    $("#attendanceTable tbody tr").each(function(){
-        let id = $(this).find("td:first").text();
-
-        let presents = $(this).find("input.present:checked").length;
-        let parts = $(this).find("input.part:checked").length;
-
-        records.push({
-            student_id: id,
-            present: presents > 0 ? 1 : 0,
-            participated: parts > 0 ? 1 : 0
-        });
-    });
-
-    $.post("save_attendance.php", {
-        session_id: sessionId,
-        records: JSON.stringify(records)
-    }, function(res){
-        alert("Attendance saved!");
-    });
-}
-})
-$(document).ready(function() {
-    loadStudents();
-});
-
-$(document).on("change", ".present, .part", function () {
-
-    let tr = $(this).closest("tr");
-    let studentId = tr.find("td:first").text();
-
-    // Detect which session number (1 to 6)
-    let cellIndex = $(this).closest("td").index();
-    let sessionNumber = Math.ceil((cellIndex - 3) / 2);
-
-    let present = tr.find(`td:nth-child(${4 + (sessionNumber - 1)*2}) input.present`).prop("checked") ? 1 : 0;
-    let participated = tr.find(`td:nth-child(${5 + (sessionNumber - 1)*2}) input.part`).prop("checked") ? 1 : 0;
-
-    $.ajax({
-        url: "save_attendance.php",
-        type: "POST",
-        data: {
-            student_id: studentId,
-            session_id: CURRENT_SESSION_ID,
-            session_number: sessionNumber,
-            present: present,
-            participated: participated
-        }
+        const rows = $("#studentsBody tr").get();
+        rows.sort((a,b)=> parseInt($(b).find(".par").text()) - parseInt($(a).find(".par").text()));
+        $("#studentsBody").append(rows);
     });
 
 });
-
-function loadAttendanceValues() {
-    $.ajax({
-        url: "load_attendance.php",
-        type: "GET",
-        data: { session_id: CURRENT_SESSION_ID },
-        success: function (response) {
-            let data = JSON.parse(response);
-
-            data.forEach(a => {
-
-                let row = $(`#studentsBody tr`).filter(function(){
-                    return $(this).find("td:first").text() == a.student_id;
-                });
-
-                let presentCell = row.find(`td:nth-child(${4 + (a.session_number - 1)*2}) input.present`);
-                let partCell = row.find(`td:nth-child(${5 + (a.session_number - 1)*2}) input.part`);
-
-                presentCell.prop("checked", a.present == 1);
-                partCell.prop("checked", a.participated == 1);
-            });
-        }
-    });
-}
