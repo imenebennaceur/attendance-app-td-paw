@@ -1,42 +1,36 @@
-?php
+<?php
 require_once "db_connect.php";
 $conn = getConnection();
 
-if (!isset($_GET['id'])) die("Missing ID");
-
-$id = intval($_GET['id']);
-
-// Load student
-$stmt = $conn->prepare("SELECT * FROM students WHERE id = :id");
-$stmt->execute([":id" => $id]);
-$stu = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$stu) die("Student not found");
-
-// If form submitted
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $ln    = $_POST['last_name'];
-    $fn    = $_POST['first_name'];
-    $email = $_POST['email'];
-
-    $update = $conn->prepare("
-        UPDATE students
-        SET last_name = :ln, first_name = :fn, email = :email
-        WHERE id = :id
-    ");
-
-    $update->execute([
-        ":ln" => $ln,
-        ":fn" => $fn,
-        ":email" => $email,
-        ":id" => $id
-    ]);
-
-    header("Location: db_management.php?updated=1");
-    exit;
+// Verify ID
+if (!isset($_GET["id"])) {
+    die("Missing ID");
 }
 
+$id = intval($_GET["id"]);
+
+// Load student from DB
+$stmt = $conn->prepare("SELECT * FROM students WHERE id = ?");
+$stmt->execute([$id]);
+$stu = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$stu) {
+    die("Student not found.");
+}
+
+// If form submitted → update
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $ln = $_POST["last_name"];
+    $fn = $_POST["first_name"];
+    $email = $_POST["email"];
+
+    $stmt = $conn->prepare("UPDATE students SET last_name=?, first_name=?, email=? WHERE id=?");
+    $stmt->execute([$ln, $fn, $email, $id]);
+
+    header("Location: db_management.php?updated=1");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -44,31 +38,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
 <title>Edit Student</title>
 <style>
-body { font-family:Arial; background:#FBF1D6; padding:40px; }
-.card { background:#FFFDF7; padding:30px; width:400px; border-radius:14px; margin:auto; }
-label { font-weight:bold; color:#3F2F03; }
-input { width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #CDBF9C; }
-.btn { padding:10px 16px; background:#3F2F03; color:white; border:none; border-radius:8px; cursor:pointer; }
+body { background:#FAF4E6; font-family:Arial; padding:40px; }
+.card { background:white; padding:25px; border-radius:12px; width:400px; margin:auto; }
+input { width:100%; padding:10px; margin-bottom:10px; }
+.btn { padding:10px; background:#6A4E23; color:white; border:none; border-radius:8px; width:100%; }
 </style>
 </head>
+
 <body>
 
 <div class="card">
     <h2>Edit Student</h2>
 
     <form method="POST">
-
         <label>Last Name</label>
-        <input name="last_name" value="<?= $stu['last_name'] ?>" required>
+        <input name="last_name" value="<?= htmlspecialchars($stu['last_name']) ?>">
 
         <label>First Name</label>
-        <input name="first_name" value="<?= $stu['first_name'] ?>" required>
+        <input name="first_name" value="<?= htmlspecialchars($stu['first_name']) ?>">
 
         <label>Email</label>
-        <input name="email" value="<?= $stu['email'] ?>" required>
+        <input name="email" value="<?= htmlspecialchars($stu['email']) ?>">
 
-        <button class="btn">Save Changes</button>
-
+        <button class="btn">Update</button>
     </form>
 </div>
 
